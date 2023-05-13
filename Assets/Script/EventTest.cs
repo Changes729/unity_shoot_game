@@ -38,7 +38,15 @@ public class EventTest : MonoBehaviour
 
     void Update()
     {
-        if ((Input.GetKeyDown(KeyCode.Space) | GameObject.Find("ShootPoint").GetComponent<Curse>().isShoot) & GameObject.Find("ShootPoint").GetComponent<Curse>().isGameContinue)
+        shootBool shoot_state = GameObject.Find("ShootPoint").GetComponent<Curse>().shoot_state;
+        int total_points = GameObject.Find("ShootPoint").GetComponent<Curse>().TOTAL_POINTS;
+        bool is_shoot = false;
+
+        for(int i = 0; i < total_points && i < shoot_state.shoot.Length; ++i)
+        {
+            is_shoot |= shoot_state.shoot[i];
+        }
+        if ((Input.GetKeyDown(KeyCode.Space) | is_shoot) & GameObject.Find("ShootPoint").GetComponent<Curse>().isGameContinue)
         {
             List<GameObject> shootPointsList = GameObject.Find("ShootPoint").GetComponent<Curse>().shootPointsList;
             if (isShootedTarget())

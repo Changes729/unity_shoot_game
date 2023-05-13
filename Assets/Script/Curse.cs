@@ -23,13 +23,14 @@ public class Curse : MonoBehaviour
     public List<GameObject> shootPointsList = new List<GameObject>();
 
     [HideInInspector]
+    public shootBool shoot_state = new shootBool();
     public float targetDistance;
     public bool isRadarPlay = true;
     float radarTimeDelay = 3f;
     public bool isShoot = false;
     public bool isGameContinue = true;
+    public int TOTAL_POINTS = 2;
 
-    const int TOTAL_POINTS = 2;
 
     void Start()
     {
@@ -45,7 +46,7 @@ public class Curse : MonoBehaviour
 
         StartCoroutine(RadarSound());
         StartCoroutine(GetText());
-        // StartCoroutine(GetShootInfo());
+        StartCoroutine(GetShootInfo());
     }
 
     // Update is called once per frame
@@ -94,10 +95,11 @@ public class Curse : MonoBehaviour
     {
         while (true)
         {
-            string url = "http://127.0.0.1:6000/test";
+            string url = "http://127.0.0.1:6000/shoot_info";
             UnityWebRequest www = UnityWebRequest.Get(url);
             yield return www.SendWebRequest();
 
+            Debug.Log("get shoot info.");
             if (www.isNetworkError || www.isHttpError)
             {
                 Debug.Log(www.error);
@@ -105,7 +107,7 @@ public class Curse : MonoBehaviour
             else
             {
                 string text = www.downloadHandler.text;
-                json = JsonUtility.FromJson<InfosCollection>(text);
+                shoot_state = JsonUtility.FromJson<shootBool>(text);
             }
         }
     }
@@ -151,7 +153,6 @@ public class Curse : MonoBehaviour
             infos[i].position = new Vector3(0, 0, 0);
             infos[i].camera = 0;
             infos[i].active = false;
-            infos[i].shoot = false;
         }
 
         /* init & debug */ {

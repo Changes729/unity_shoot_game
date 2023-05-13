@@ -14,5 +14,9 @@ public class ScreenPointInfo {
     public Vector3 position;
     public int camera;
     public bool active;
-    public bool shoot;
+}
+
+[System.Serializable]
+public class shootBool {
+    public bool[] shoot;
 }
