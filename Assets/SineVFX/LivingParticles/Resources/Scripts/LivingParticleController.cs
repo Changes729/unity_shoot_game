@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class LivingParticleController : MonoBehaviour {
 
-    public Transform affector;
-
-    private ParticleSystemRenderer psr;
+    public List<Transform> affector = new List<Transform>();
+    public List<ParticleSystemRenderer> psrs = new List<ParticleSystemRenderer>();
 
 	void Start () {
-        psr = GetComponent<ParticleSystemRenderer>();
+
 	}
-	
+
 	void Update () {
-        psr.material.SetVector("_Affector", affector.position);
+        for ( int i = 0; i < affector.Count; ++i) {
+            psrs[i].material.SetVector("_Affector", affector[i].position);
+        }
     }
 }

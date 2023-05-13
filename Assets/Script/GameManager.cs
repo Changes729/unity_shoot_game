@@ -9,10 +9,11 @@ public class GameManager : MonoBehaviour
     public Transform targetPos;
     [SerializeField]
     public float targetPosZ = -2.46f;
+
+    private bool key_pressed = false;
     // Start is called before the first frame update
     void Start()
     {
-        //Screen.SetResolution(6480, 1080, true);
         SetTarget();
     }
 
@@ -21,15 +22,20 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.S))
         {
+            key_pressed = true;
+        }
+        else if( key_pressed )
+        {
+            key_pressed = false;
             SetTarget();
         }
     }
+
     void SetTarget()
     {
         float targetPosX = Random.Range(-3.8f, 4.25f);
         float targetPosY = Random.Range(1.5f, 7f);
         targetPos.localPosition = new Vector3(targetPosX, targetPosY, targetPosZ);
-        //Debug.Log(targetPos.localPosition);
+        Debug.Log(targetPos.localPosition);
     }
-
 }

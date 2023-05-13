@@ -22,14 +22,14 @@ public class EventTest : MonoBehaviour
 
         if (vfxExplosion == null)
         {
-            Debug.Log("VFX Îª¿Õ!");
+            Debug.Log("VFX Îªï¿½ï¿½!");
             return;
         }
         vfxExplosion.Stop();
 
         if (vfxMiss == null)
         {
-            Debug.Log("VFX Îª¿Õ!");
+            Debug.Log("VFX Îªï¿½ï¿½!");
             return;
         }
         vfxMiss.Stop();
@@ -38,13 +38,14 @@ public class EventTest : MonoBehaviour
 
     void Update()
     {
-        if ((Input.GetKeyDown(KeyCode.Space) | GameObject.Find("MainAffector").GetComponent<Curse>().isShoot) & GameObject.Find("MainAffector").GetComponent<Curse>().isGameContinue)
+        if ((Input.GetKeyDown(KeyCode.Space) | GameObject.Find("ShootPoint").GetComponent<Curse>().isShoot) & GameObject.Find("ShootPoint").GetComponent<Curse>().isGameContinue)
         {
+            List<GameObject> shootPointsList = GameObject.Find("ShootPoint").GetComponent<Curse>().shootPointsList;
             if (isShootedTarget())
             {
-                //Debug.Log(1);
+                Debug.Log(1);
                 FindObjectOfType<AudioManager>().Play("xiu");
-                Vector3 point = GameObject.Find("Affector").transform.position;
+                Vector3 point = shootPointsList[0].transform.position;
                 explotion.transform.localPosition = new Vector3(point.x, point.y, -2.46f);
                 GameObject.Find("ShootLight").transform.localPosition = new Vector3(point.x, point.y, -2 - 2.46f);
                 aimMesh.SetActive(false);
@@ -52,13 +53,12 @@ public class EventTest : MonoBehaviour
                 FindObjectOfType<AudioManager>().Play("explosion");
                 playableDirector.Play();
                 winUI.SetActive(true);
-
             }
             else
             {
                 FindObjectOfType<AudioManager>().Play("xiu");
-                //Debug.Log(2);
-                Vector3 point = GameObject.Find("Affector").transform.position;
+                Debug.Log(2);
+                Vector3 point = shootPointsList[0].transform.position;
                 missExplotion.transform.localPosition = new Vector3(point.x, point.y, -2.46f);
                 GameObject.Find("ShootLight").transform.localPosition = new Vector3(point.x, point.y, -2 - 2.46f);
                 vfxMiss.SendEvent("miss");
@@ -69,8 +69,8 @@ public class EventTest : MonoBehaviour
                 targetCube.SetActive(true);
 
             }
-            GameObject.Find("MainAffector").GetComponent<Curse>().isRadarPlay = false;
-            GameObject.Find("MainAffector").GetComponent<Curse>().isGameContinue = false;
+            GameObject.Find("ShootPoint").GetComponent<Curse>().isRadarPlay = false;
+            GameObject.Find("ShootPoint").GetComponent<Curse>().isGameContinue = false;
             StartCoroutine(toScense0());
         }
         if (Input.GetKeyDown(KeyCode.E))
@@ -80,7 +80,7 @@ public class EventTest : MonoBehaviour
     }
     bool isShootedTarget()
     {
-        float targetDistance = GameObject.Find("MainAffector").GetComponent<Curse>().targetDistance;
+        float targetDistance = GameObject.Find("ShootPoint").GetComponent<Curse>().targetDistance;
         if (targetDistance < 0.5f)
         {
             return true;

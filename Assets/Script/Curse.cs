@@ -10,127 +10,49 @@ using Newtonsoft.Json;
 
 public class Curse : MonoBehaviour
 {
-
+    public GameObject LivingParticles05;
     public Camera viewCamera0;
     public Camera viewCamera1;
     public Camera viewCamera2;
     public Transform planePos;
+
     [SerializeField]
     Transform targetPos;
-    Vector3 cursorPos = new Vector3(0, 0, 0);
+    InfosCollection json = new InfosCollection();
+    public GameObject shootPoint;
+    public List<GameObject> shootPointsList = new List<GameObject>();
+
     [HideInInspector]
     public float targetDistance;
     public bool isRadarPlay = true;
     float radarTimeDelay = 3f;
     public bool isShoot = false;
     public bool isGameContinue = true;
-    public PointData c1;
-    public PointData c2;
-    public PointData c3;
-    public int currentScreen = 0;
+
+    const int TOTAL_POINTS = 2;
+
     void Start()
     {
         isRadarPlay = true;
-        StartCoroutine(RadarSound());
-        //StartCoroutine(GetText());
-        //StartCoroutine(GetShootInfo());
+        for(int i = 0; i < TOTAL_POINTS; ++i){
+            GameObject newPoint = GameObject.Instantiate(shootPoint) as GameObject;
+            newPoint.transform.localPosition = new Vector3(0, 0, 0);
+            newPoint.SetActive(true);
+            shootPointsList.Add(newPoint);
 
+            LivingParticles05.GetComponent<LivingParticleController>().affector.Add(newPoint.transform);
+        }
+
+        StartCoroutine(RadarSound());
+        StartCoroutine(GetText());
+        // StartCoroutine(GetShootInfo());
     }
 
     // Update is called once per frame
-
     [System.Obsolete]
     void Update()
     {
-
-        detectMousePos();
-        //calPosOnScreen();
-        Plane groundPlane = new Plane(Vector3.back, planePos.position);
-        //print(cursorPos);
-        if (currentScreen == 0)
-        {
-            Ray ray = viewCamera0.ScreenPointToRay(cursorPos);
-            //Ray ray = viewCamera0.ScreenPointToRay(Input.mousePosition);
-            //Debug.Log(Input.mousePosition);
-
-            if (groundPlane.Raycast(ray, out float rayDistance))
-            {
-
-                Vector3 point = ray.GetPoint(rayDistance);
-                targetDistance = Vector3.Distance(targetPos.position, point);
-                print(targetDistance);
-                radarTimeDelay = targetDistance / 4f;
-                if (radarTimeDelay < 0.1f) radarTimeDelay = 0.1f;
-                Debug.DrawLine(ray.origin, point, Color.red);
-                point.z -= 0.4f;
-
-                if (isGameContinue)
-                {
-
-                    transform.localPosition = point;
-                }
-                else
-                {
-                    transform.localPosition = new Vector3(999f, 999f, 999f);
-                }
-            }
-        }
-        else if (currentScreen == 1)
-        {
-            Ray ray = viewCamera1.ScreenPointToRay(cursorPos);
-            //Ray ray = viewCamera1.ScreenPointToRay(Input.mousePosition);
-            //Debug.Log(Input.mousePosition);
-
-            if (groundPlane.Raycast(ray, out float rayDistance))
-            {
-
-                Vector3 point = ray.GetPoint(rayDistance);
-                targetDistance = Vector3.Distance(targetPos.position, point);
-                print(targetDistance);
-                radarTimeDelay = targetDistance / 3f;
-                if (radarTimeDelay < 0.1f) radarTimeDelay = 0.1f;
-                Debug.DrawLine(ray.origin, point, Color.red);
-                point.z -= 0.4f;
-
-                if (isGameContinue)
-                {
-
-                    transform.localPosition = point;
-                }
-                else
-                {
-                    transform.localPosition = new Vector3(999f, 999f, 999f);
-                }
-            }
-        }
-        else if (currentScreen == 2)
-        {
-            Ray ray = viewCamera2.ScreenPointToRay(cursorPos);
-            //Ray ray = viewCamera2.ScreenPointToRay(Input.mousePosition);
-            //Debug.Log(Input.mousePosition);
-
-            if (groundPlane.Raycast(ray, out float rayDistance))
-            {
-
-                Vector3 point = ray.GetPoint(rayDistance);
-                targetDistance = Vector3.Distance(targetPos.position, point);
-                print(targetDistance);
-                radarTimeDelay = targetDistance / 3f;
-                if (radarTimeDelay < 0.1f) radarTimeDelay = 0.1f;
-                Debug.DrawLine(ray.origin, point, Color.red);
-                point.z -= 0.4f;
-
-                if (isGameContinue)
-                {
-
-                    transform.localPosition = point;
-                }
-                else
-                {
-                    transform.localPosition = new Vector3(999f, 999f, 999f);
-                }
-            }
-        }
+        updatePoints();
     }
 
     [System.Obsolete]
@@ -138,30 +60,24 @@ public class Curse : MonoBehaviour
     {
         while (true)
         {
-            string url = "http://127.0.0.1:5000";
+            string url = "http://127.0.0.1:6000";
             UnityWebRequest www = UnityWebRequest.Get(url);
             yield return www.SendWebRequest();
 
             if (www.isNetworkError || www.isHttpError)
             {
                 Debug.Log(www.error);
+                json.totalIndex = 0;
             }
             else
             {
-                // 将结果显示为文本
                 string text = www.downloadHandler.text;
-                //JArray jlist = JArray.Parse(text);
-                JArray jArry = (JArray)JsonConvert.DeserializeObject(text);
-                //PointsData aa = JsonConvert.DeserializeObject<PointsData>(text);
-                c1 = JsonConvert.DeserializeObject<PointData>(jArry[0].ToString());
-                c2 = JsonConvert.DeserializeObject<PointData>(jArry[1].ToString());
-                c3 = JsonConvert.DeserializeObject<PointData>(jArry[2].ToString());
-                //cursorPos.x = (float)obj["x"] * UnityEngine.Screen.width;
-                //cursorPos.y = UnityEngine.Screen.height - (float)obj["y"] * UnityEngine.Screen.height;
-                //isShoot = (bool)obj["shoot"];
+                // string text = "{\"totalIndex\": 2, \"infos\": [{\"index\": 0, \"position\": [0.5645833333333333, 0.6645833333333333], \"camera\": 0, \"shoot\": false}, {\"index\": 1, \"position\": [0.5697916666666667, 0.4875], \"camera\": 0, \"shoot\": false}]}";
+                json = JsonUtility.FromJson<InfosCollection>(text);
             }
         }
     }
+
     IEnumerator RadarSound()
     {
         while (isRadarPlay)
@@ -178,7 +94,7 @@ public class Curse : MonoBehaviour
     {
         while (true)
         {
-            string url = "http://127.0.0.1:5000/isShoot";
+            string url = "http://127.0.0.1:6000/test";
             UnityWebRequest www = UnityWebRequest.Get(url);
             yield return www.SendWebRequest();
 
@@ -189,55 +105,73 @@ public class Curse : MonoBehaviour
             else
             {
                 string text = www.downloadHandler.text;
-                isShoot = Convert.ToBoolean(text);
+                json = JsonUtility.FromJson<InfosCollection>(text);
             }
         }
     }
 
-    void mousePos() {
-        cursorPos.x = Input.mousePosition.x;
-        cursorPos.y = Input.mousePosition.y;
-    } 
-     
-    void calPosOnScreen()
-    {
-        if (c1.active)
-        {
-            cursorPos.x = c1.x * UnityEngine.Screen.width / 3;
-            cursorPos.y = (1 - c1.y) * UnityEngine.Screen.height;
-            currentScreen = 0;
+    void updateLocalPosition(int camera_index, int p_index, Vector3 pos) {
+        Plane groundPlane = new Plane(Vector3.back, planePos.position);
+        Camera[] cams = {viewCamera0, viewCamera1, viewCamera2};
+
+        if(camera_index > 2) {
+            Debug.Log("[Error] error camera index.");
+            return;
         }
-        else if (c2.active)
+        Debug.Log("update camera " + camera_index + ", point index " + p_index + ", in pos " + pos);
+
+        Ray ray = cams[camera_index].ScreenPointToRay(pos);
+
+        if (groundPlane.Raycast(ray, out float rayDistance))
         {
-            cursorPos.x = c2.x * UnityEngine.Screen.width / 3 + UnityEngine.Screen.width / 3;
-            cursorPos.y = (1 - c2.y) * UnityEngine.Screen.height;
-            currentScreen = 1;
-        }
-        else if (c3.active)
-        {
-            cursorPos.x = c3.x * UnityEngine.Screen.width / 3 + UnityEngine.Screen.width / 3 * 2;
-            cursorPos.y = (1 - c3.y) * UnityEngine.Screen.height;
-            currentScreen = 2;
-        }
-        else
-        {
-            cursorPos.x = 0;
-            cursorPos.y = 0;
+            Vector3 point = ray.GetPoint(rayDistance);
+            targetDistance = Vector3.Distance(targetPos.position, point);
+            Debug.Log(targetDistance);
+            if(camera_index == 0) {
+                radarTimeDelay = targetDistance / 4f;
+            } else /* 1 or 2 */ {
+                radarTimeDelay = targetDistance / 3f;
+            }
+
+            radarTimeDelay = Mathf.Max(radarTimeDelay, 0.1f);
+            Debug.DrawLine(ray.origin, point, Color.red);
+            point.z -= 0.4f;
+
+            shootPointsList[p_index].transform.localPosition = isGameContinue ? point : new Vector3(999f, 999f, 999f);
+            shootPointsList[p_index].SetActive(true);
         }
     }
-    void detectMousePos()
+
+    void updatePoints()
     {
-        if (Input.mousePosition.x < Screen.width / 3)
-        {
-            currentScreen = 0;
+        ScreenPointInfo[] infos = new ScreenPointInfo[TOTAL_POINTS];
+        for( int i = 0; i < TOTAL_POINTS; ++i) {
+            infos[i] = new ScreenPointInfo();
+            infos[i].index = i;
+            infos[i].position = new Vector3(0, 0, 0);
+            infos[i].camera = 0;
+            infos[i].active = false;
+            infos[i].shoot = false;
         }
-        else if (Input.mousePosition.x > Screen.width / 3 && Input.mousePosition.x < Screen.width / 3 * 2)
-        {
-            currentScreen = 1;
+
+        /* init & debug */ {
+            if(Input.mousePresent) {
+                infos[0].position[0] = Input.mousePosition.x;
+                infos[0].position[1] = Input.mousePosition.y;
+                infos[0].camera = (int)(Input.mousePosition.x / Screen.width * 3);
+            }
         }
-        else if (Input.mousePosition.x > Screen.width / 3 * 2 && Input.mousePosition.x < Screen.width)
-        {
-            currentScreen = 2;
+
+        for(int i = 0; i < json.totalIndex && i < TOTAL_POINTS; i++) {
+            Info info = json.infos[i];
+            infos[i].position[0] = info.position[0] * UnityEngine.Screen.width;
+            infos[i].position[1] = (1 - info.position[1]) * UnityEngine.Screen.height;
+            infos[i].camera = info.camera;
+            infos[i].active = true;
+        }
+
+        for( int i = 0; i < TOTAL_POINTS; ++i) {
+            updateLocalPosition(infos[i].camera, infos[i].index, infos[i].position);
         }
     }
 }
