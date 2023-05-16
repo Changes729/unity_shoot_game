@@ -23,28 +23,36 @@ public class Curse : MonoBehaviour
     public List<GameObject> shootPointsList = new List<GameObject>();
 
     [HideInInspector]
+    public int total_counts = 2;
     public shootBool shoot_state = new shootBool();
-    public float targetDistance;
+    public float[] targetDistance;
     public bool isRadarPlay = true;
-    float radarTimeDelay = 3f;
+    float[] radarTimeDelay;
     public bool isShoot = false;
     public bool isGameContinue = true;
-    public int TOTAL_POINTS = 2;
 
 
     void Start()
     {
         isRadarPlay = true;
-        for(int i = 0; i < TOTAL_POINTS; ++i){
+        targetDistance = new float[total_counts];
+        radarTimeDelay = new float[total_counts];
+        for(int i = 0; i < total_counts; ++i){
             GameObject newPoint = GameObject.Instantiate(shootPoint) as GameObject;
             newPoint.transform.localPosition = new Vector3(0, 0, 0);
             newPoint.SetActive(true);
             shootPointsList.Add(newPoint);
 
             LivingParticles05.GetComponent<LivingParticleController>().affector.Add(newPoint.transform);
+            targetDistance[i] = 0f;
+            radarTimeDelay[i] = 3f;
         }
 
-        StartCoroutine(RadarSound());
+
+        for(int i = 0; i < total_counts; ++i)
+        {
+            StartCoroutine(RadarSound(i));
+        }
         StartCoroutine(GetText());
         StartCoroutine(GetShootInfo());
     }
@@ -79,13 +87,13 @@ public class Curse : MonoBehaviour
         }
     }
 
-    IEnumerator RadarSound()
+    IEnumerator RadarSound(int index)
     {
         while (isRadarPlay)
         {
-            //Debug.Log("playradar");
-            FindObjectOfType<AudioManager>().Play("radar");
-            yield return new WaitForSeconds(radarTimeDelay);
+            string label = "radar" + (index + 1).ToString();
+            FindObjectOfType<AudioManager>().Play(label);
+            yield return new WaitForSeconds(radarTimeDelay[index]);
         }
 
     }
@@ -127,15 +135,15 @@ public class Curse : MonoBehaviour
         if (groundPlane.Raycast(ray, out float rayDistance))
         {
             Vector3 point = ray.GetPoint(rayDistance);
-            targetDistance = Vector3.Distance(targetPos.position, point);
-            Debug.Log(targetDistance);
+            targetDistance[p_index] = Vector3.Distance(targetPos.position, point);
+            Debug.Log(targetDistance[p_index]);
             if(camera_index == 0) {
-                radarTimeDelay = targetDistance / 4f;
+                radarTimeDelay[p_index] = targetDistance[p_index] / 4f;
             } else /* 1 or 2 */ {
-                radarTimeDelay = targetDistance / 3f;
+                radarTimeDelay[p_index] = targetDistance[p_index] / 3f;
             }
 
-            radarTimeDelay = Mathf.Max(radarTimeDelay, 0.1f);
+            radarTimeDelay[p_index] = Mathf.Max(radarTimeDelay[p_index], 0.1f);
             Debug.DrawLine(ray.origin, point, Color.red);
             point.z -= 0.4f;
 
@@ -146,8 +154,8 @@ public class Curse : MonoBehaviour
 
     void updatePoints()
     {
-        ScreenPointInfo[] infos = new ScreenPointInfo[TOTAL_POINTS];
-        for( int i = 0; i < TOTAL_POINTS; ++i) {
+        ScreenPointInfo[] infos = new ScreenPointInfo[total_counts];
+        for( int i = 0; i < total_counts; ++i) {
             infos[i] = new ScreenPointInfo();
             infos[i].index = i;
             infos[i].position = new Vector3(0, 0, 0);
@@ -163,7 +171,7 @@ public class Curse : MonoBehaviour
             }
         }
 
-        for(int i = 0; i < json.totalIndex && i < TOTAL_POINTS; i++) {
+        for(int i = 0; i < json.totalIndex && i < total_counts; i++) {
             Info info = json.infos[i];
             infos[i].position[0] = info.position[0] * UnityEngine.Screen.width;
             infos[i].position[1] = (1 - info.position[1]) * UnityEngine.Screen.height;
@@ -171,8 +179,9 @@ public class Curse : MonoBehaviour
             infos[i].active = true;
         }
 
-        for( int i = 0; i < TOTAL_POINTS; ++i) {
-            updateLocalPosition(infos[i].camera, infos[i].index, infos[i].position);
+        for( int i = 0; i < total_counts; ++i) {
+            /* curr camera is always be 1 */
+            updateLocalPosition(1, infos[i].index, infos[i].position);
         }
     }
 }

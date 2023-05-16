@@ -43,15 +43,14 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f4358a2cd443674ca1ff2cdab522146, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   viewCamera0: {fileID: 0}
   viewCamera1: {fileID: 0}
   viewCamera2: {fileID: 0}
   planePos: {fileID: 0}
   targetPos: {fileID: 0}
   shootPoints: {fileID: 0}
-  targetDistance: 0
   isRadarPlay: 1
   isShoot: 0
   isGameContinue: 1

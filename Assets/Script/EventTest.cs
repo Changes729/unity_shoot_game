@@ -39,10 +39,10 @@ public class EventTest : MonoBehaviour
     void Update()
     {
         shootBool shoot_state = GameObject.Find("ShootPoint").GetComponent<Curse>().shoot_state;
-        int total_points = GameObject.Find("ShootPoint").GetComponent<Curse>().TOTAL_POINTS;
+        int total_counts = GameObject.Find("ShootPoint").GetComponent<Curse>().total_counts;
         bool is_shoot = false;
 
-        for(int i = 0; i < total_points && i < shoot_state.shoot.Length; ++i)
+        for(int i = 0; i < total_counts && i < shoot_state.shoot.Length; ++i)
         {
             is_shoot |= shoot_state.shoot[i];
         }
@@ -88,16 +88,13 @@ public class EventTest : MonoBehaviour
     }
     bool isShootedTarget()
     {
-        float targetDistance = GameObject.Find("ShootPoint").GetComponent<Curse>().targetDistance;
-        if (targetDistance < 0.5f)
-        {
-            return true;
-
+        float[] targetDistance = GameObject.Find("ShootPoint").GetComponent<Curse>().targetDistance;
+        int total_counts = GameObject.Find("ShootPoint").GetComponent<Curse>().total_counts;
+        bool success = false;
+        for(int i = 0; i < total_counts; ++i){
+            success |= (targetDistance[i] < 0.5f);
         }
-        else
-        {
-            return false;
-        }
+        return success;
     }
 
     IEnumerator toScense0()
