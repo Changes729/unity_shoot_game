@@ -11,19 +11,18 @@ using Newtonsoft.Json;
 public class Curse : MonoBehaviour
 {
     public GameObject LivingParticles05;
+    public GameObject GameManager;
     public Camera viewCamera0;
     public Camera viewCamera1;
     public Camera viewCamera2;
     public Transform planePos;
 
     [SerializeField]
-    Transform targetPos;
     InfosCollection json = new InfosCollection();
     public GameObject shootPoint;
     public List<GameObject> shootPointsList = new List<GameObject>();
 
     [HideInInspector]
-    public int total_counts = 2;
     public shootBool shoot_state = new shootBool();
     public float[] targetDistance;
     public bool isRadarPlay = true;
@@ -31,9 +30,13 @@ public class Curse : MonoBehaviour
     public bool isShoot = false;
     public bool isGameContinue = true;
 
+    int total_counts;
+    GameManager gameManager;
 
     void Start()
     {
+        gameManager = GameManager.GetComponent<GameManager>();
+        total_counts = gameManager.total_counts;
         isRadarPlay = true;
         targetDistance = new float[total_counts];
         radarTimeDelay = new float[total_counts];
@@ -135,7 +138,8 @@ public class Curse : MonoBehaviour
         if (groundPlane.Raycast(ray, out float rayDistance))
         {
             Vector3 point = ray.GetPoint(rayDistance);
-            targetDistance[p_index] = Vector3.Distance(targetPos.position, point);
+            GameObject targetPos = gameManager.targetPosList[p_index];
+            targetDistance[p_index] = Vector3.Distance(targetPos.transform.position, point);
             Debug.Log(targetDistance[p_index]);
             if(camera_index == 0) {
                 radarTimeDelay[p_index] = targetDistance[p_index] / 4f;
