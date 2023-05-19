@@ -17,8 +17,8 @@ public class GameManager : MonoBehaviour
     {
         for(int i = 0; i < total_counts; ++i){
             GameObject newPos = GameObject.Instantiate(targetPos) as GameObject;
-            float targetPosX = Random.Range(-7.24f, 10.3f);
-            float targetPosY = Random.Range(1.23f, 8.36f);
+            float targetPosX = Random.Range(-2f, 3.7f);
+            float targetPosY = Random.Range(0f, 8.5f);
             newPos.transform.localPosition = new Vector3(targetPosX, targetPosY, targetPosZ);
             targetPosList.Add(newPos);
             newPos.SetActive(false);
@@ -42,8 +42,8 @@ public class GameManager : MonoBehaviour
     void ResetTarget()
     {
         for(int i = 0; i < total_counts; ++i){
-            float targetPosX = Random.Range(-7.24f, 10.3f);
-            float targetPosY = Random.Range(1.23f, 8.36f);
+            float targetPosX = Random.Range(-2f, 3.7f);
+            float targetPosY = Random.Range(0f, 8.5f);
             targetPosList[i].transform.localPosition = new Vector3(targetPosX, targetPosY, targetPosZ);
             targetPosList[i].SetActive(false);
         }
