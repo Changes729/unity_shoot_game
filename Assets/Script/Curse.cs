@@ -18,7 +18,7 @@ public class Curse : MonoBehaviour
     public Transform planePos;
 
     [SerializeField]
-    InfosCollection json = new InfosCollection();
+    public InfosCollection json = new InfosCollection();
     public GameObject shootPoint;
     public List<GameObject> shootPointsList = new List<GameObject>();
 
@@ -72,7 +72,7 @@ public class Curse : MonoBehaviour
     {
         while (true)
         {
-            string url = "http://127.0.0.1:6000";
+            string url = "http://127.0.0.1:6000/aim_info";
             UnityWebRequest www = UnityWebRequest.Get(url);
             yield return www.SendWebRequest();
 

@@ -5,7 +5,6 @@ public class Info {
     public int index;
     public float[] position;
     public int camera;
-    public bool shoot;
 }
 
 [System.Serializable]

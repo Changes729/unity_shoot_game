@@ -18,6 +18,8 @@ public class EventTest : MonoBehaviour
     [SerializeField] Transform missExplotion;
     [SerializeField] GameObject aimMesh;
 
+    bool is_success;
+    bool is_game_shoot;
     int total_counts;
     GameManager gameManager;
 
@@ -25,6 +27,8 @@ public class EventTest : MonoBehaviour
     {
         gameManager = GameManager.GetComponent<GameManager>();
         total_counts = gameManager.total_counts;
+        is_game_shoot = false;
+        is_success = false;
         if (vfxExplosion == null)
         {
             Debug.Log("VFX Ϊ��!");
@@ -49,6 +53,16 @@ public class EventTest : MonoBehaviour
         List<GameObject> shootPointsList = GameObject.Find("ShootPoint").GetComponent<Curse>().shootPointsList;
         bool isGameContinue = GameObject.Find("ShootPoint").GetComponent<Curse>().isGameContinue;
 
+        if(!isGameContinue)
+        {
+            aimMesh.SetActive(false);
+            StartCoroutine(toScense0());
+            if(!is_success)
+            {
+                loseUI.SetActive(true);
+            }
+        }
+
         for(int i = 0; i < total_counts && i < shoot_state.shoot.Length; ++i)
         {
             is_shoot |= shoot_state.shoot[i];
@@ -70,7 +84,8 @@ public class EventTest : MonoBehaviour
             }
 
             GameObject.Find("ShootLight").transform.localPosition = new Vector3(point.x, point.y, -2 -4.35f);
-            if (isShootedTarget(i))
+            is_success = isShootedTarget(i);
+            if (is_success)
             {
                 explotion.transform.localPosition = new Vector3(point.x, point.y, -4.35f);
                 vfxExplosion.SendEvent("OnPlay1");
@@ -84,17 +99,16 @@ public class EventTest : MonoBehaviour
                 missExplotion.transform.localPosition = new Vector3(point.x, point.y, -4.35f);
                 vfxMiss.SendEvent("miss");
                 MissDirector.Play();
-                loseUI.SetActive(true);
             }
+
+            FindObjectOfType<AudioManager>().Play("xiu");
+            is_game_shoot = true;
         }
 
-        if(is_shoot && isGameContinue)
+        if(is_success || (is_game_shoot && !player_continue()))
         {
-            aimMesh.SetActive(false);
             GameObject.Find("ShootPoint").GetComponent<Curse>().isRadarPlay = false;
             GameObject.Find("ShootPoint").GetComponent<Curse>().isGameContinue = false;
-            FindObjectOfType<AudioManager>().Play("xiu");
-            StartCoroutine(toScense0());
         }
 
         if (Input.GetKeyDown(KeyCode.E))
@@ -106,6 +120,12 @@ public class EventTest : MonoBehaviour
     {
         float[] targetDistance = GameObject.Find("ShootPoint").GetComponent<Curse>().targetDistance;
         return targetDistance[index] < 0.5f;
+    }
+
+    bool player_continue()
+    {
+        InfosCollection player_info = GameObject.Find("ShootPoint").GetComponent<Curse>().json;
+        return player_info.totalIndex != 0;
     }
 
     IEnumerator toScense0()

@@ -23,6 +23,8 @@ public class GameManager : MonoBehaviour
             targetPosList.Add(newPos);
             newPos.SetActive(false);
         }
+
+        ResetTarget();
     }
 
     // Update is called once per frame
@@ -41,11 +43,15 @@ public class GameManager : MonoBehaviour
 
     void ResetTarget()
     {
-        for(int i = 0; i < total_counts; ++i){
-            float targetPosX = Random.Range(-2f, 3.7f);
-            float targetPosY = Random.Range(0f, 8.5f);
-            targetPosList[i].transform.localPosition = new Vector3(targetPosX, targetPosY, targetPosZ);
-            targetPosList[i].SetActive(false);
-        }
+        /* total counts is 2 */
+        float targetPosX = Random.Range(-2f, 3.7f);
+        float targetPosY = Random.Range(0f, 8.5f * (targetPosX + 2f) / (3.7f + 2f));
+        targetPosList[0].transform.localPosition = new Vector3(targetPosX, targetPosY, targetPosZ);
+        targetPosList[0].SetActive(false);
+
+        targetPosX = Random.Range(-2f, 3.7f);
+        targetPosY = Random.Range(8.5f - 8.5f * (targetPosX + 2f) / (3.7f + 2f), 8.5f);
+        targetPosList[1].transform.localPosition = new Vector3(targetPosX, targetPosY, targetPosZ);
+        targetPosList[1].SetActive(false);
     }
 }
