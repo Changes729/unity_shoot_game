@@ -72,7 +72,7 @@ public class Curse : MonoBehaviour
     {
         while (true)
         {
-            string url = "http://127.0.0.1:6000/aim_info";
+            string url = "http://127.0.0.1:5000/aim_info";
             UnityWebRequest www = UnityWebRequest.Get(url);
             yield return www.SendWebRequest();
 
@@ -106,7 +106,7 @@ public class Curse : MonoBehaviour
     {
         while (true)
         {
-            string url = "http://127.0.0.1:6000/shoot_info";
+            string url = "http://127.0.0.1:5000/shoot_info";
             UnityWebRequest www = UnityWebRequest.Get(url);
             yield return www.SendWebRequest();
 
