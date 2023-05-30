@@ -110,12 +110,21 @@ public class EventTest : MonoBehaviour
             GameObject.Find("ShootPoint").GetComponent<Curse>().isRadarPlay = false;
             GameObject.Find("ShootPoint").GetComponent<Curse>().isGameContinue = false;
         }
+        else
+        {
+            for(int i = 0; i < total_counts; ++i)
+            {
+                GameObject targetPos = gameManager.targetPosList[i];
+                targetPos.SetActive(false);
+            }
+        }
 
         if (Input.GetKeyDown(KeyCode.E))
         {
             vfxExplosion.Stop();
         }
     }
+
     bool isShootedTarget(int index = 0)
     {
         float[] targetDistance = GameObject.Find("ShootPoint").GetComponent<Curse>().targetDistance;
