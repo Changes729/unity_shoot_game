@@ -167,6 +167,7 @@ public class Curse : MonoBehaviour
             infos[i].active = false;
         }
 
+        /** info: 如果有些环境会有鼠标常在，就需要注视着部分代码 */
         /* init & debug */ {
             if(Input.mousePresent) {
                 infos[0].position[0] = Input.mousePosition.x;

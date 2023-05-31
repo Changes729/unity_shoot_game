@@ -1026,12 +1026,12 @@ MonoBehaviour:
     source: {fileID: 0}
   - name: radar1
     clip: {fileID: 8300000, guid: 1309c01b0ec9f534e99b9b689739dc89, type: 3}
-    volume: 0.912
+    volume: 0.474
     pitch: 1
     source: {fileID: 0}
   - name: radar2
     clip: {fileID: 8300000, guid: 083a561f76b588d40994b06ae3c7da05, type: 3}
-    volume: 0.912
+    volume: 0.932
     pitch: 1
     source: {fileID: 0}
   - name: xiu
